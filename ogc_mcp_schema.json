@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/ogc-mcp-mapping.schema.json",
+  "title": "Modular OGC API to MCP Mapping",
+  "type": "object",
+  "description": "Formal, extensible mapping from OGC API components (Features, Records, EDR) to MCP tools and types.",
+  "properties": {
+    "services": {
+      "type": "array",
+      "description": "Configured OGC API services that this MCP backend can talk to.",
+      "items": {
+        "$ref": "#/$defs/OgcServiceConfig"
+      }
+    }
+  },
+  "required": ["services"],
+  "$defs": {
+    "OgcServiceConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this service configuration."
+        },
+        "title": {
+          "type": "string"
+        },
+        "baseUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Base URL of the OGC API endpoint (often a pygeoapi instance)."
+        },
+        "features": {
+          "$ref": "#/$defs/FeaturesMapping"
+        },
+        "records": {
+          "$ref": "#/$defs/RecordsMapping"
+        },
+        "edr": {
+          "$ref": "#/$defs/EdrMapping"
+        }
+      },
+      "required": ["id", "baseUrl"],
+      "additionalProperties": false
+    },
+    "FeaturesMapping": {
+      "type": "object",
+      "description": "MCP mapping for OGC API Features.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "collectionsToolName": {
+          "type": "string",
+          "description": "Name of MCP tool that lists feature collections.",
+          "default": "list_feature_collections"
+        },
+        "itemsToolName": {
+          "type": "string",
+          "description": "Name of MCP tool that lists or queries features.",
+          "default": "get_features"
+        },
+        "defaultCrs": {
+          "type": "string",
+          "description": "Default CRS identifier (e.g. EPSG:4326)."
+        },
+        "collectionFilters": {
+          "type": "array",
+          "description": "Optional filters to expose only a subset of collections.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "RecordsMapping": {
+      "type": "object",
+      "description": "MCP mapping for OGC API Records.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "collectionsToolName": {
+          "type": "string",
+          "default": "list_record_collections"
+        },
+        "searchToolName": {
+          "type": "string",
+          "default": "search_records"
+        },
+        "defaultLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "EdrMapping": {
+      "type": "object",
+      "description": "MCP mapping for OGC API EDR.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "collectionsToolName": {
+          "type": "string",
+          "default": "list_edr_collections"
+        },
+        "positionToolName": {
+          "type": "string",
+          "default": "edr_position"
+        },
+        "defaultVerticalCrs": {
+          "type": "string",
+          "description": "Optional default vertical CRS for 3D coordinates."
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
+

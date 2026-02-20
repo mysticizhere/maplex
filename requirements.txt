@@ -1,0 +1,3 @@
+httpx>=0.27
+pygeoapi>=0.16
+fastmcp>=0.1.0
