@@ -1,0 +1,12 @@
+{
+    "OGC_SERVICE_CLIENT": {
+        "host": "https://example.org/ogcapi",
+        "timeout": 10.0,
+        "port": 8080
+    },
+    "SERVICE_NAME": "maplex",
+    "SERVICE_VERSION": "1.0.0",
+    "BASE_SERVICE_CLIENT": {
+        "timeout": 10.0
+    }
+}
