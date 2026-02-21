@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Maplex OGC MCP tools for LLM",
+  "description": "Tool definitions for the Maplex service exposing OGC API - Processes. Use with MCP Streamable HTTP transport.",
+  "service": {
+    "name": "Maplex OGC MCP",
+    "transport": "streamable-http",
+    "streamableHttp": {
+      "description": "MCP over HTTP using JSON-RPC 2.0 (Streamable HTTP transport). Single endpoint for all requests.",
+      "baseUrl": "http://localhost:3001",
+      "methods": {
+        "POST": "Send JSON-RPC 2.0 messages (e.g. tools/list, tools/call). Request body: JSON with jsonrpc, method, params, id.",
+        "GET": "Optional: open/maintain Server-Sent Events (SSE) stream for streaming responses."
+      },
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer <AUTH_TOKEN>. Required. Use the maplex service AUTH_TOKEN."
+      },
+      "references": [
+        "MCP specification: https://spec.modelcontextprotocol.io/",
+        "Streamable HTTP: JSON-RPC 2.0 over HTTP; SSE used when streaming."
+      ]
+    }
+  },
+  "tools": [
+    {
+      "name": "ogc_list_processes",
+      "description": "List available OGC processes. Uses GET /processes on the OGC API - Processes server. Returns the process list (ids, titles, links). Call this first to discover process IDs for ogc_get_process_info and ogc_execute_process.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "ogc_get_process_info",
+      "description": "Get detailed information about an OGC process by ID: inputs schema, outputs schema, execution link. Uses GET /processes/{processId}. Pass a process_id from ogc_list_processes to see required/optional inputs before executing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "process_id": {
+            "type": "string",
+            "description": "Process identifier (e.g. 'echo', 'add', 'buffer', 'aggregate', 'bbox-intersection')."
+          }
+        },
+        "required": ["process_id"]
+      }
+    },
+    {
+      "name": "ogc_execute_process",
+      "description": "Execute an OGC process asynchronously. Uses POST /processes/{processId}/execution. Returns job details including jobId; use ogc_get_job_status_or_results with that jobId to poll status and fetch results when the job is successful.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "process_id": {
+            "type": "string",
+            "description": "Process identifier: 'echo', 'add', 'buffer', 'aggregate', or 'bbox-intersection'."
+          },
+          "inputs": {
+            "type": "object",
+            "description": "Process inputs. Shape depends on process_id. See processInputSchemas below for each process.",
+            "additionalProperties": true
+          }
+        },
+        "required": ["process_id", "inputs"]
+      }
+    },
+    {
+      "name": "ogc_get_job_status_or_results",
+      "description": "Get current OGC job status. Uses GET /jobs/{jobId}. If the job is done (successful/succeeded/done/complete), also fetches and returns results via GET /jobs/{jobId}/results. Otherwise returns current job status only. Use the jobId returned by ogc_execute_process.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier (UUID) returned by ogc_execute_process."
+          }
+        },
+        "required": ["job_id"]
+      }
+    }
+  ],
+  "processInputSchemas": {
+    "echo": {
+      "message": {
+        "type": "string",
+        "description": "Any value to echo back.",
+        "default": "Hello"
+      }
+    },
+    "add": {
+      "a": {
+        "type": "number",
+        "description": "First operand."
+      },
+      "b": {
+        "type": "number",
+        "description": "Second operand."
+      }
+    },
+    "buffer": {
+      "geometry": {
+        "type": "object",
+        "description": "GeoJSON geometry (Point, LineString, or Polygon) to buffer."
+      },
+      "distance": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Buffer distance in meters.",
+        "default": 100
+      }
+    },
+    "aggregate": {
+      "values": {
+        "type": "array",
+        "items": { "type": "number" },
+        "description": "Array of numbers to aggregate (min, max, mean, sum, count)."
+      }
+    },
+    "bbox-intersection": {
+      "bbox_a": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 4,
+        "maxItems": 4,
+        "description": "First bounding box as [minX, minY, maxX, maxY]."
+      },
+      "bbox_b": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 4,
+        "maxItems": 4,
+        "description": "Second bounding box as [minX, minY, maxX, maxY]."
+      }
+    }
+  },
+  "exampleToolCalls": {
+    "ogc_list_processes": {},
+    "ogc_get_process_info": { "process_id": "bbox-intersection" },
+    "ogc_execute_process": {
+      "process_id": "bbox-intersection",
+      "inputs": { "bbox_a": [0, 0, 10, 10], "bbox_b": [5, 5, 15, 15] }
+    },
+    "ogc_get_job_status_or_results": { "job_id": "<jobId from ogc_execute_process>" }
+  }
+}
