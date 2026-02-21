@@ -8,17 +8,11 @@ if str(_root) not in sys.path:
 
 from fastmcp import FastMCP
 
-from app.service_clients.ogc_client.ogc_client import OgcApiClient
+from app.tools.ogc.process import register_tools
 
 
 mcp = FastMCP("ogc-mcp-backend")
-
-
-@mcp.tool(name="test")
-async def llm_stream(data: dict) -> dict:
-    """Call OGC example with the given data. Pass a dict (e.g. {"key": "value"}) as input."""
-    result = await OgcApiClient.example(data)
-    return result
+register_tools(mcp)
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http", host="0.0.0.0", port="3001")
