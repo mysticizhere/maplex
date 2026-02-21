@@ -1,10 +1,12 @@
 {
     "OGC": {
-      "HOST": "https://jsonplaceholder.typicode.com",
+      "HOST": "https://demo.pygeoapi.io/master",
       "TIMEOUT": 10.0
     },
     "SERVICE_NAME": "maplex",
     "SERVICE_VERSION": "1.0.0",
     "INTERSERVICE_TIMEOUT": 10.0,
-    "AUTH_TOKEN": ""
+    "AUTH_TOKEN": "123",
+    "HOST": "0.0.0.0",
+    "PORT": 3001
 }

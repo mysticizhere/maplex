@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import ujson
@@ -15,9 +16,8 @@ def json_file_to_dict(file: str) -> dict:
 
 
 def _load_config() -> dict:
-    """Load config.json from project root (parent of app package)."""
+    """Load config from CONFIG_PATH env, or config.json in project root."""
     try:
-        # Resolve path from this file: app/utils/common_utils.py -> project root
         root = Path(__file__).resolve().parent.parent.parent
         return json_file_to_dict(str(root / "config.json"))
     except (TypeError, FileNotFoundError, ValueError):

@@ -1,0 +1,42 @@
+# Local development
+venv/
+.venv/
+env/
+.env
+.env.*
+!.env.example
+
+# Git and IDE
+.git/
+.gitignore
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Config with secrets (use CONFIG_PATH mount or build-time secret)
+config.json
+
+# Docs and dev tooling (optional, keep if you want them in image)
+# README.md
+# *.md
+# tests/
+# pytest.ini
+# pyrightconfig.json
+
+# Misc
+*.log
+.DS_Store
+terminals/
+agent-transcripts/

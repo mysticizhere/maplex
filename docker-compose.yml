@@ -1,0 +1,18 @@
+# Maplex MCP server - run with: docker compose up -d
+# For production: create config.json (see config_template.json) and mount it:
+#   volumes:
+#     - ./config.json:/app/config.json:ro
+
+services:
+  maplex:
+    build: .
+    ports:
+      - "${MCP_PORT:-3001}:3001"
+    environment:
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=3001
+      - CONFIG_PATH=/app/config.json
+    # Uncomment to use host config.json (create from config_template.json first)
+    # volumes:
+    #   - ./config.json:/app/config.json:ro
+    restart: unless-stopped
